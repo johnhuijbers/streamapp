@@ -1,0 +1,370 @@
+<html>
+    <head>
+        <title>stream</title>
+        <style>
+            textarea, select, input, button { outline: none; }
+
+            :root {
+                --address-bar-height: 75px; 
+                --browser-inset: 75px; 
+            }
+
+            * {
+                box-sizing: content-box;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+            #main {
+                width: 100vw;
+                height: 100vh;
+                padding: 0;
+                margin: 0;
+            }
+            #main .row {
+                width: 100vw;
+                height: 100vh;
+            }
+            #main .col-sm-2 {
+                border-left: 1px solid #ececec;
+                border-right: 1px solid #ececec;
+            }
+            #main .col-sm-2 .panel {
+                
+                border-bottom: 1px solid #ececec;
+                padding-bottom: 3px;    
+                padding-top: 3px;    
+            }
+            .date-area {
+                margin-bottom: 10px;
+                border-bottom: 1px solid #ececec;
+                padding-bottom: 3px;    
+            }
+            .date-area .date {
+                font-weight: bold;
+            }
+            .date-area .timestamp {
+                font-style: italic;
+            }
+            .col-sm-2.date-now {
+                border-left: 2px groove !important;
+                border-color:slategray;
+            }
+            .nav-button {
+                flex: 0 0 6.666667%;
+                max-width: 6.666667%;
+                text-align: center;
+                line-height: 100vh;
+                padding-top: 50vh;
+            }
+
+            /* { */
+            #browser {
+                display: none;
+                position: fixed;
+                top: var(--browser-inset);
+                left: var(--browser-inset);
+                right: var(--browser-inset);
+                bottom: var(--browser-inset);
+
+                border: 1px solid grey;
+                border-radius: 10px;
+                z-index: 1000;
+                overflow: hidden;
+            }
+            #browser .top-panel {
+                height: var(--address-bar-height);
+                border-bottom: 1px solid grey;
+                width: 100%;
+            }
+            #browser #screen {
+                height: calc(100% - var(--address-bar-height));
+                width: 100%;
+            }
+            #browser .title {
+                height: calc(var(--address-bar-height) / 2);
+                width: 100%;
+                background-color: #ececec;
+                float: left;
+            }
+            #browser .title input { 
+                width: 100%;
+                border: 0;
+                text-align: center;
+                background: none;
+            }
+            #browser .address i {
+                position:absolute;
+                left: 8px;
+                top: 8px;
+            }
+            #browser .address {
+                position: relative;
+                height: calc((var(--address-bar-height) / 2) - 1px);
+                width: calc(100% - 200px);
+                background-color:white;
+                float: left;
+            }
+            #browser .address input { 
+                width: 100%;
+                border: 0;
+                text-align: left;
+                background: none;
+                height: calc((var(--address-bar-height) / 2) - 1px);
+                padding-left: 25px;
+                border: none;
+                z-index: 10001;
+            }
+            #browser .buttons {
+                float: left;
+                width: 200px;
+                height: calc((var(--address-bar-height) / 2) - 1px);
+                background: #ecececa4;
+            }
+            #browser .buttons .button { 
+                width: calc((200px / 3) - 7px);
+                height: calc((var(--address-bar-height) / 2) - 4px);
+                float: left;
+                background: #ecececa4;
+                border: 1px solid grey;
+                margin-left: 5px;
+            }
+            /* } */
+        </style>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+    </head>
+
+    <body>
+        <!-- 
+        live stream dashboard
+        timeline based
+
+        see your events and subscriptions all combined in 1 dashboard
+        laid out like a calendar with timestamps and a live line that draws "now"
+        ability to scroll back into time, to read what happend a while ago
+        an overview of all websites with rss feeds
+        calendar items
+        tweets, twitter integration
+        facebook posts, facebook integration
+        youtube videos, deep integration
+        instagram posts, twitter integration
+        emails
+        chats
+        live weather incl predictions
+        save photos
+        browse internet and leave trail of history 
+        acts as sort of launcher/os replacement
+
+        mark items as private or public
+
+        public stream available for other to see which acts as your "live like stream"
+        
+        later
+        - direct interaction from inside content items, for now these items open in built in browser
+    
+
+        DEC                  | DEC                  | DEC                  | DEC                  | DEC
+        16                   | 16                   | 16                   | 16                   | 16
+                             |                      |                      |                      |
+        17:45                | 18:00                | 18:15                | 18:30                | 18:45
+                             |                      |                      |                      |
+                             |                      |                      |                      |
+                             |                      |                      |                      |
+                             |                      |                      |                      | 
+                             
+        -->
+
+        <div id="browser">
+            <div class="top-panel">
+                <div class="title">
+                        <input id="title" />
+                </div>
+                <div class="buttons">
+                        <div id="back" class="button button-back"></div>
+                        <div id="forward" class="button button-forward"></div>
+                        <div id="refresh" class="button button-refresh"></div>
+                </div>                
+                <div class="address">      
+                    <i class="fa fa-lock"></i>              
+                    <input id="url" />
+                </div>
+            </div>
+            <img id="screen" tabindex="0" />
+        </div>
+
+        <div id="main">
+            <div class="row">
+                <div class="nav-button">
+                        <i class="fas fa-angle-double-left"></i>
+                </div>
+                <div class="col-sm-2">
+                    <div class="date-area">
+                        <div class="date">DEC 16</div>
+                        <div class="timestamp">17:30</div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                17:31:02
+                                <span class="font-weight-bold"><i class="fab fa-reddit"></i> /r/frontpage</span>
+                                Smart dog                                
+                            </h4>
+                        </div>
+                        <div class="panel-body">
+                            <video class="media-element tErWI93xEKrI2OkozPs7J" height="300" loop="" style="margin:0 auto" width="300" muted="" controls autoplay>
+                                <source src="https://external-preview.redd.it/mp4/VhfKPvwjpxx3oz_q2EFQkdZH0nQappOABvi9lkAux0w-source.mp4?s=e20f4b198906e1a4268529b81b46fd9b75e02bf8">
+                            </video>
+                            <span class="font-weight-bold"><i class="fa fa-external-link-alt"></i></span>
+                        </div>
+                    </div> 
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                17:32:12
+                                
+                                <span class="font-weight-bold"><i class="fab fa-twitter"></i> @elonmusk</span>
+                            </h4>
+                        </div>
+                        <div class="panel-body">
+                            Tesla is releasing all vehicles for sale today where original customer can’t take delivery before end of year.
+                            Reminder to US buyers that $7500 tax credit drops in half in 2 weeks. Order online http://Tesla.com  or visit stores.
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                17:38:18
+                                
+                                <span class="font-weight-bold"><i class="fab fa-reddit"></i> /r/frontpage</span>
+                                Workers in the video games industry have formed a union for the first time in the UK.
+                                
+                            </h4>
+                        </div>
+                        <div class="panel-body">
+                                <a href="">news.sky.com/story/...</a>
+                                
+                                <span class="font-weight-bold"><i class="fa fa-external-link-alt"></i></span>
+                        </div>
+                    </div>     
+                    
+                    <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    17:38:55
+                                    
+                                    <span class="font-weight-bold"><i class="fab fa-whatsapp"></i> John Smith</span>
+                                </h4>
+                            </div>
+                            <div class="panel-body">
+                                <p></p>
+                                    <p class="font-weight-bold"><i class="fa fa-comment"></i> I'll call you in half an hour...</p>
+                            </div>
+                    </div>                      
+                </div>
+                <div class="col-sm-2">
+                    <div class="date-area">
+                            <div class="date">DEC 16</div>
+                            <div class="timestamp">17:40</div>
+                    </div>             
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                17:40:00
+                                
+                                <span class="font-weight-bold"><i class="fa fa-calendar"></i> Dentist apointment</span>
+                            </h4>
+                        </div>
+                        <div class="panel-body">                       
+                            <p class="font-weight-bold"><i class="fa fa-map-pin"></i> 209 E 56th St, New York, NY 10022, Verenigde Staten</p>
+                            <p class="font-weight-bold"><i class="fa fa-phone"></i> +1 646-846-9689</p>
+                            <p><button type="button" class="btn btn-primary">Travel</button></p>
+                        </div>
+                    </div>       
+
+                    <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    17:48:32
+                                    
+                                    <span class="font-weight-bold"><i class="far fa-envelope"></i> John Smith</span>
+                                </h4>
+                            </div>
+                            <div class="panel-body">
+                                I meet with the board of directors next Monday to review the progress of our ongoing loan sale. 
+                                Please prepare an update of your loan study so that I can illustrate the improvement in our loan-to-asset ratio over last quarter. 
+                                I need it by 1:00 p.m. Friday. If you have any questions, don't hesitate to call me.
+                                <div>
+                                    <button type="button" class="btn btn-primary">Reply</button>
+                                    <button type="button" class="btn btn-primary">Forward</button>
+                                </div>
+                            </div>
+                    </div>  
+
+                    <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    17:49:57
+                                    
+                                    <span class="font-weight-bold"><i class="fab fa-twitter"></i> @tweetsauce</span>
+                                </h4>
+                            </div>
+                            <div class="panel-body">
+                                    MIND FIELD S3E3 is out now!
+                                    I visit my hometown of Stilwell, KS with Chris Eliasmith, the director of the Centre for Theoretical Neuroscience @UWaterloo, to turn a crowd of people into a giant neural network capable of reading numerals like a human brain: https://www.youtube.com/watch?v=rA5qnZUXcqo …
+                            </div>
+                        </div>                    
+                </div>
+                <div class="col-sm-2 date-now">
+                    <div class="date-area">
+                            <div class="date">DEC 16</div>
+                            <div class="timestamp">17:50 Now</div>
+                    </div>                    
+                </div>
+                <div class="col-sm-2">
+                    <div class="date-area">
+                            <div class="date">DEC 16</div>
+                            <div class="timestamp">18:00</div>
+                    </div>                    
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="date-area">
+                            <div class="date">DEC 16</div>
+                            <div class="timestamp">18:10</div>
+                    </div>
+                    <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    18:15:00
+                                    <span class="font-weight-bold"><i class="fa fa-phone"></i> Conference call</span>
+                                </h4>
+                            </div>
+                            <div class="panel-body">
+                                    <p class="font-weight-bold"><i class="fa fa-user"></i> John Smith</p>
+                                    <p class="font-weight-bold"><i class="fa fa-user"></i> Jane Smith</p>
+                            </div>
+                    </div>                          
+                </div>
+                <div class="nav-button">
+                        <i class="fas fa-angle-double-right"></i>
+                </div>                
+            </div>
+        </div>
+        
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+        <script src="patch.js"></script>
+        <script src="client.js"></script>
+        </script>
+    </body>
+</html>

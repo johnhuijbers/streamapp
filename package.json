@@ -1,0 +1,22 @@
+{
+  "name": "stream-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.2",
+    "imagemin": "^6.0.0",
+    "imagemin-jpegtran": "^6.0.0",
+    "imagemin-mozjpeg": "^8.0.0",
+    "mozjpeg-stream": "^1.0.3",
+    "puppeteer": "^1.11.0",
+    "sharp": "^0.21.1",
+    "socket.io": "^2.2.0"
+  }
+}
