@@ -93,7 +93,11 @@ io.on('connection', async (socket) => {
                 });
 
                 const data = (await imagemin.buffer(b, {
-                    plugins: [imageminJpegtran(), imageminMozjpeg()]
+                    plugins: [
+                        imageminMozjpeg({
+                            quality: 25
+                        })
+                    ]
                 })).toString('base64');
 
                 if (lastBuff != data){
@@ -107,7 +111,6 @@ io.on('connection', async (socket) => {
         };
         clearInterval(id);
         id = setInterval(sendBuffer, rate);
-        
     });
 
     let keysPressed = [];
