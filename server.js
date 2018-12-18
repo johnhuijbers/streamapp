@@ -1,14 +1,10 @@
-
 const imagemin = require('imagemin');
-const imageminJpegtran = require('imagemin-jpegtran');
 const imageminMozjpeg = require('imagemin-mozjpeg');
-
 process.stdout.write('\x1b[2J');
 process.stdout.write('\x1b[0f');
-
-for (let i = 0; i < 20; i++){
-    console.log("------------------------");
-}
+for (let i = 0; i < 200; i++){ console.log("------------------------"); }
+process.stdout.write('\x1b[2J');
+process.stdout.write('\x1b[0f');
 
 const puppeteer = require('puppeteer');
 var app = require('express')();
@@ -62,9 +58,21 @@ io.on('connection', async (socket) => {
             window.cursor.style.backgroundColor = "red";
             window.cursor.style.left = "100px";
             window.cursor.style.top = "100px";
-            window.cursor.style.zIndex = Number.MAX_SAFE_INTEGER;
+            window.cursor.style.zIndex = Number.MAX_SAFE_INTEGER-1;
             window.cursor.style.pointerEvents = "none";
             document.body.appendChild(window.cursor);
+
+            // window.scrollGuide = document.createElement('div');
+            // window.scrollGuide.style.position = "fixed";
+            // window.scrollGuide.style.width = "100vw";
+            // window.scrollGuide.style.color = "white";
+            // window.scrollGuide.style.height = "100vh";
+            // window.scrollGuide.style.backgroundColor = "rgba(255, 0, 0, 0.5)";
+            // window.scrollGuide.style.left = "0";
+            // window.scrollGuide.style.top = "0";
+            // window.scrollGuide.style.zIndex = Number.MAX_SAFE_INTEGER+1;
+            // window.scrollGuide.style.pointerEvents = "none";
+            // document.body.appendChild(window.scrollGuide);
         });
     })
     socket.on('NAVIGATION_REQUEST', async (e) => { 
@@ -95,7 +103,11 @@ io.on('connection', async (socket) => {
                 const data = (await imagemin.buffer(b, {
                     plugins: [
                         imageminMozjpeg({
-                            quality: 25
+                            quality: 75,
+                            tune: 'ms-ssim',
+                            smooth: 100,
+                            dct: 'float',
+                            dcScanOpt: 2
                         })
                     ]
                 })).toString('base64');
@@ -144,14 +156,18 @@ io.on('connection', async (socket) => {
         let x = e.x;
         let y = viewport.y + e.y;
 
-        await page.mouse.move(x, y);
-        await page.evaluate((x, y) => {
-            if (window.cursor){
-                window.cursor.style.left = x + "px";
-                window.cursor.style.top = y + "px";
-                window.cursor.innerText = x + ',' + y;
-            }
-        }, x, y);
+        try {
+            await page.mouse.move(x, y);
+            await page.evaluate((x, y) => {
+                if (window.cursor){
+                    window.cursor.style.left = x + "px";
+                    window.cursor.style.top = y + "px";
+                    window.cursor.innerText = x + ',' + y;
+                }
+            }, x, y);
+        }
+        catch (e){
+        }
     });
 
     socket.on('EVENT_MOUSEUP', async (e) => await page.mouse.up(e.button));
@@ -159,7 +175,12 @@ io.on('connection', async (socket) => {
     socket.on('EVENT_MOUSESCROLL', async (e) =>  {
         scrollY += e.delta;
         scrollY = scrollY < 0 ? 0 : scrollY;
-        viewport.y = scrollY;
+        await page.evaluate(
+            (scrollY) => { 
+                document.documentElement.style.marginTop = "-" + scrollY + "px";
+            }, 
+            scrollY
+        );
     });
 });
 

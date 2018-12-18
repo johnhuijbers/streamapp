@@ -123,12 +123,24 @@
                 background: #ecececa4;
             }
             #browser .buttons .button { 
+                --height: calc((var(--address-bar-height) / 2) - 4px);
+
                 width: calc((200px / 3) - 7px);
-                height: calc((var(--address-bar-height) / 2) - 4px);
+                height: var(--height);
                 float: left;
-                background: #ecececa4;
-                border: 1px solid grey;
+                background: #ececec;
+                border: 1px solid #f6f6f6f6;
+                border-bottom: 1px solid darkgray;
+                border-right: 1px solid rgb(211, 211, 211);
                 margin-left: 5px;
+                text-align: center;
+                line-height: var(--height);
+                vertical-align: middle;
+            }
+            #browser .buttons .button i { 
+                --height: calc((var(--address-bar-height) / 2) - 4px);
+                height: var(--height);
+                line-height: var(--height);
             }
             /* } */
         </style>
@@ -182,8 +194,12 @@
                         <input id="title" />
                 </div>
                 <div class="buttons">
-                        <div id="back" class="button button-back"></div>
-                        <div id="forward" class="button button-forward"></div>
+                        <div id="back" class="button button-back">
+                            <i class="fa fa-arrow-left"></i>
+                        </div>
+                        <div id="forward" class="button button-forward">
+                            <i class="fa fa-arrow-right"></i>
+                        </div>
                         <div id="refresh" class="button button-refresh"></div>
                 </div>                
                 <div class="address">      
