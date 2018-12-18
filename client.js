@@ -86,5 +86,5 @@ class App {
     }
 }
 
-// window.app = new App();
-// $(app.init.bind(app));
+window.app = new App();
+$(app.init.bind(app));
